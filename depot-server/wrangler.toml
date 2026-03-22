@@ -5,4 +5,4 @@ compatibility_date = "2024-01-01"
 [[kv_namespaces]]
 binding = "HOME_STORE"
 # id は Cloudflare 側で作成した Namespace に合わせて設定
-id = "CHANGE_ME"
+id = "5d7a3c4c4af744bfb90e04da335aa742"
