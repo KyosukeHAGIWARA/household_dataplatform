@@ -17,3 +17,6 @@ dist/
 .ruff_cache/
 
 .DS_Store
+
+# direnv
+.envrc
