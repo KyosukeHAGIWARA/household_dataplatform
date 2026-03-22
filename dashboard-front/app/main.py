@@ -31,6 +31,27 @@ def _load_auth_settings() -> tuple[dict, str, str, int, set[str] | None]:
         local = _load_auth_from_local_secrets_file()
         auth = local.get("auth", {}) if isinstance(local, dict) else {}
 
+    if not auth:
+        # Support streamlit-authenticator's common config layout:
+        # [cookie] name/key/expiry_days and [credentials.usernames.*]
+        try:
+            cookie = st.secrets.get("cookie", {})
+            credentials = st.secrets.get("credentials", {})
+        except Exception:
+            cookie = {}
+            credentials = {}
+
+        if isinstance(cookie, dict) and isinstance(credentials, dict):
+            usernames = credentials.get("usernames")
+            auth = {
+                "cookie_name": cookie.get("name") or cookie.get("cookie_name"),
+                "cookie_key": cookie.get("key") or cookie.get("cookie_key"),
+                "cookie_expiry_days": cookie.get("expiry_days")
+                or cookie.get("cookie_expiry_days"),
+                "usernames": usernames,
+                "allowed_usernames": st.secrets.get("allowed_usernames"),
+            }
+
     users = auth.get("usernames")
     cookie_name = auth.get("cookie_name")
     cookie_key = auth.get("cookie_key")
@@ -39,6 +60,16 @@ def _load_auth_settings() -> tuple[dict, str, str, int, set[str] | None]:
 
     if not isinstance(users, dict) or not cookie_name or not cookie_key or not cookie_expiry_days:
         st.error("認証設定が見つかりません（`st.secrets.auth`）。")
+
+        # Safe diagnostics (keys only; no secret values).
+        try:
+            top_keys = list(st.secrets.keys())  # type: ignore[attr-defined]
+        except Exception:
+            top_keys = []
+        if top_keys:
+            st.caption("SCC Secrets のトップレベルキー（確認用）")
+            st.code("\n".join(map(str, top_keys)))
+
         st.code(
             """# dashboard-front/.streamlit/secrets.toml（ローカル）または SCC の Secrets に設定
 [auth]
@@ -50,6 +81,21 @@ cookie_expiry_days = 30
 name = "user1"
 email = "user1@example.com"
 plain_password = "CHANGE_ME"
+""",
+            language="toml",
+        )
+
+        st.caption("参考: streamlit-authenticator公式に近い形式でもOK")
+        st.code(
+            """[cookie]
+name = "household"
+key = "CHANGE_ME_TO_A_LONG_RANDOM_SECRET"
+expiry_days = 30
+
+[credentials.usernames.user1]
+name = "user1"
+email = "user1@example.com"
+password = "CHANGE_ME"  # または auth と同様に plain_password を採用するなら main.py 側を合わせてください
 """,
             language="toml",
         )
