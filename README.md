@@ -28,6 +28,12 @@ cd depot-server
 wrangler dev
 ```
 
+## Streamlit Community Cloud
+
+- **App file**: `dashboard-front/app/main.py`
+- **Dependencies**: Streamlit CC は `requirements.txt` を読みます（`pyproject.toml` だけだと Poetry 側で package install を試みて失敗することがあります）
+- **Secrets**: `dashboard-front/.streamlit/secrets.toml` の内容を Streamlit CC の Secrets UI に貼り付け
+
 ## Files
 
 - `flake.nix`: 開発シェル定義
