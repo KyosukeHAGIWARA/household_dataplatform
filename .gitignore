@@ -1,0 +1,19 @@
+.venv/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.direnv/
+.streamlit/
+dashboard-front/.streamlit/
+dashboard-front/data/
+uv.lock
+.wrangler/
+# Python packaging/build artifacts
+*.egg-info/
+build/
+dist/
+.ruff_cache/
+
+.DS_Store

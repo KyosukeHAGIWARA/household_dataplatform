@@ -1,0 +1,8 @@
+name = "household-relay"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "HOME_STORE"
+# id は Cloudflare 側で作成した Namespace に合わせて設定
+id = "CHANGE_ME"
